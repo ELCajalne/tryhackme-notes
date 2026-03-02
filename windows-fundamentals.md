@@ -7,6 +7,7 @@
 - [Part 2 — System Tools, Registry](#part-2--system-tools-and-registry)
 - [Part 3 — Updates, Security, BitLocker](#part-3--updates-security-and-bitlocker)
 
+
 ---
 
 ## Part 1 — File System, Accounts and UAC
@@ -285,3 +286,4 @@ Protects data even if an attacker removes the hard drive or boots from another O
 Creates point-in-time snapshots (shadow copies) for backups and system restore. Stored in the System Volume Information folder.
 
 > ⚠️ Ransomware often deletes shadow copies to prevent recovery — offline and off-site backups are essential.
+

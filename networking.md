@@ -18,6 +18,12 @@
 - [Firewalls 101](#firewalls-101)
 - [VPN Basics](#vpn-basics)
 - [LAN Networking Devices](#lan-networking-devices)
+- [OSI Model](#-osi-model)
+- [TCP/IP Model](#-tcpip-model)
+- [IP Addresses & Subnets](#-ip-addresses--subnets)
+- [UDP & TCP](#-udp--tcp)
+- [Encapsulation](#-encapsulation)
+- [Telnet](#-telnet)
 
 ---
 
@@ -353,3 +359,223 @@ Evaluates: source, destination, port, and protocol.
 - Connects multiple devices using ethernet cables (3–63 devices).
 - Operates at **Layer 2 or Layer 3** (mutually exclusive).
 - **Layer 2 Switch** — Forwards frames using MAC addresses.
+
+# from another module
+
+## 🔗 OSI Model
+
+The OSI (Open Systems Interconnection) model is a conceptual framework that describes how communications occur in a computer network. It has **7 layers**.
+
+| Layer | Name | Main Function | Examples |
+|---|---|---|---|
+| 7 | Application | Services/interfaces to apps | HTTP, FTP, DNS, SMTP, IMAP |
+| 6 | Presentation | Data encoding, encryption, compression | Unicode, MIME, JPEG, PNG |
+| 5 | Session | Establishing & maintaining sessions | NFS, RPC |
+| 4 | Transport | End-to-end communication & segmentation | TCP, UDP |
+| 3 | Network | Logical addressing & routing | IP, ICMP, IPSec |
+| 2 | Data Link | Reliable transfer between adjacent nodes | Ethernet (802.3), WiFi (802.11) |
+| 1 | Physical | Physical transmission media | Electrical, optical, wireless signals |
+
+### Layer Highlights
+
+**Layer 1 — Physical**
+Deals with the physical connection — wires, signals, and the definition of binary 0s and 1s.
+
+**Layer 2 — Data Link**
+Handles data transfer between nodes on the **same network segment** (e.g. computers on the same switch).
+- Uses **MAC addresses** (Media Access Control) — 6 bytes in hexadecimal
+- Format: `a4:c3:f0:85:ac:2d`
+  - Left 3 bytes = vendor identifier
+  - Right 3 bytes = unique device address
+
+**Layer 3 — Network**
+Handles **routing between different networks** — like connecting offices across cities.
+- Uses IP addresses, ICMP, VPN protocols (IPSec, SSL/TLS)
+
+**Layer 4 — Transport**
+Enables **end-to-end communication** between applications on different hosts.
+- Handles flow control, segmentation, and error correction
+- Protocols: TCP, UDP
+
+**Layer 5 — Session**
+Establishes, maintains, and synchronizes communication sessions between applications.
+
+**Layer 6 — Presentation**
+Ensures data is in a format the application layer can understand.
+- Handles encoding (ASCII, Unicode), compression, and encryption
+- Example: MIME encodes binary files as 7-bit ASCII for email attachments
+
+**Layer 7 — Application**
+Provides network services directly to end-user applications.
+- Examples: HTTP (web), FTP (files), DNS (domain names), POP3/SMTP/IMAP (email)
+
+---
+
+## 🌐 TCP/IP Model
+
+The TCP/IP model is the practical model used by the modern internet. It groups the OSI layers into 4 (or 5) layers.
+
+| TCP/IP Layer | OSI Equivalent | Protocols |
+|---|---|---|
+| Application | Layers 5, 6, 7 | HTTP, FTP, DNS, SMTP |
+| Transport | Layer 4 | TCP, UDP |
+| Internet | Layer 3 | IP, ICMP, IPSec |
+| Link | Layer 2 | Ethernet, WiFi |
+| *(Physical)* | Layer 1 | Signals, cables |
+
+> The TCP/IP model was designed so the network can **continue functioning even if parts of it go down** — key for military and disaster resilience.
+
+---
+
+## 🌍 IP Addresses & Subnets
+
+### IP Address Basics
+
+An IP address uniquely identifies a device on a network. It consists of **4 octets** (32 bits total).
+
+```
+192  .  168  .  1  .  1
+8bit    8bit   8bit  8bit  =  32 bits
+```
+
+- Each octet ranges from **0 to 255**
+- `x.x.x.0` = network address (reserved)
+- `x.x.x.255` = broadcast address (sends to all devices on the network)
+
+```bash
+ipconfig    # Windows
+ifconfig    # Linux/Unix
+ip a s      # Linux (modern)
+```
+
+### Subnet & Subnet Mask
+
+- **Subnet** — a divided segment of a larger network (like a neighbourhood)
+- **Subnet Mask** — defines which part of the IP is the network and which is the host
+
+```
+IP Address:   192.168.1.10
+Subnet Mask:  255.255.255.0
+```
+The `255.255.255` = network (fixed for all devices), the `0` = host (unique per device)
+
+With `255.255.255.0`: usable hosts = **1 to 254** (0 = network address, 255 = broadcast)
+
+### CIDR Notation
+
+Shorthand for subnet mask. The `/number` = how many bits are used for the network.
+
+| CIDR | Subnet Mask | Usable Hosts |
+|---|---|---|
+| `/8` | `255.0.0.0` | ~16 million |
+| `/12` | `255.240.0.0` | ~1 million |
+| `/16` | `255.255.0.0` | ~65,000 |
+| `/24` | `255.255.255.0` | 254 |
+
+> Bigger `/number` = smaller network. Smaller `/number` = bigger network.
+
+### Public vs Private IP
+
+| | Public IP | Private IP |
+|---|---|---|
+| Visible to internet | Yes | No (by default) |
+| Analogy | Home postal address | Apartment number in a compound |
+
+**Private IP ranges (RFC 1918):**
+```
+10.0.0.0       -  10.255.255.255   (/8)
+172.16.0.0     -  172.31.255.255   (/12)
+192.168.0.0    -  192.168.255.255  (/16)
+```
+
+**A private IP can become exposed through:**
+1. **Port Forwarding** — manually opening a door on the router for outside traffic
+2. **VPN** — remote user becomes virtually inside the network
+3. **Compromised device** — attacker already inside can reach all private IPs
+4. **Misconfigured Firewall** — wrong rules accidentally let outside traffic in
+
+### Routing
+A **router** forwards data packets between networks at **Layer 3**, inspecting IP addresses and forwarding packets toward their destination — passing through multiple routers until it arrives.
+
+---
+
+## 📡 UDP & TCP
+
+Both are **Layer 4 (Transport)** protocols that allow processes on different hosts to communicate using **port numbers** (range: 1–65535, port 0 is reserved).
+
+| | UDP | TCP |
+|---|---|---|
+| Full Name | User Datagram Protocol | Transmission Control Protocol |
+| Connection | Connectionless | Connection required |
+| Delivery Guarantee | ❌ No | ✅ Yes |
+| Speed | Faster | Slower |
+| Analogy | Letter with no tracking | Parcel with delivery confirmation |
+| Best for | Streaming, gaming, VoIP | Web browsing, email, file transfers |
+
+### TCP Three-Way Handshake
+
+Before data flows, TCP establishes a connection in 3 steps:
+
+```
+Client            Server
+  |---- SYN ------->|    "Hey, I want to connect"
+  |<--- SYN-ACK ----|    "Ok, I hear you. I'm ready"
+  |---- ACK ------->|    "Great, let's go"
+          ↓
+     Data flows
+```
+
+---
+
+## 📦 Encapsulation
+
+Each network layer **wraps data with its own header** before passing it down — like putting a letter inside multiple envelopes.
+
+| Layer | Data Name | What's Added |
+|---|---|---|
+| Application | Data | Raw user data |
+| Transport | Segment (TCP) / Datagram (UDP) | Port numbers |
+| Network | Packet | Source & destination IP addresses |
+| Data Link | Frame | MAC addresses + trailer |
+
+```
+[ Ethernet Header | IP Header | TCP Header | Application Data | Ethernet Trailer ]
+       ↑ Frame                                                         ↑
+```
+
+> Each layer only focuses on its own job and doesn't care what's inside — it just wraps and passes it down. This keeps each layer **independent and focused**.
+
+---
+
+## 🖥️ Telnet
+
+TELNET (Teletype Network) is a protocol for remote terminal connection — it lets you connect to and communicate with a remote system and issue text commands over TCP.
+
+```bash
+# Connect to a host on a specific port
+telnet <ip_address> <port>
+
+# Echo server (port 7) — echoes everything you send
+telnet 10.0.0.1 7
+
+# Daytime server (port 13) — returns current date and time then closes
+telnet 10.0.0.1 13
+
+# Web server (port 80) — request a webpage
+telnet 10.0.0.1 80
+GET / HTTP/1.1
+Host: example.com
+# Press Enter twice
+```
+
+**Exiting Telnet:**
+```
+Ctrl + ]        →  enters telnet prompt
+telnet> quit    →  exits completely
+```
+
+> ⚠️ Telnet sends data in **plain text** — not secure for production environments. Used mainly for testing and learning purposes.
+
+---
+
+*📅 Notes compiled during TryHackMe Pre-Security Path*
