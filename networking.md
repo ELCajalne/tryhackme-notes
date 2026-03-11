@@ -578,4 +578,3 @@ telnet> quit    →  exits completely
 
 ---
 
-*📅 Notes compiled during TryHackMe Pre-Security Path*
