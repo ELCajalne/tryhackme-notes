@@ -164,6 +164,5 @@ ip.src == 192.168.1.2       # traffic FROM this IP
 ip.dst == 192.168.1.2       # traffic TO this IP
 ```
 
----
 
-*Notes from hands-on TryHackMe Wireshark labs. Written while actually doing the rooms — not just reading about them.*
+
